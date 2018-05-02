@@ -27,6 +27,8 @@ script:
   - go test -v $PKGS
 
 # calls goreleaser
+before_deploy:
+  - git checkout Gopkg.lock
 deploy:
   - provider: script
     user: 1995parham
