@@ -1,0 +1,33 @@
+project_name: udpnoise
+
+release:
+  github:
+    owner: 1995parham
+    name: udpnoise
+
+builds:
+  - binary: udpnoise
+    goos:
+      - linux
+      - darwin
+    goarch:
+      - amd64
+      - "386"
+    goarm:
+      - "6"
+    main: ./cmd/udpnoise
+    ldflags: -s -w -X main.version={{.Version}} -X main.commit={{.Commit}} -X main.date={{.Date}}
+
+archive:
+  format: tar.gz
+  name_template: '{{ .Binary }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{
+    .Arm }}{{ end }}'
+  files:
+  - licence*
+  - LICENCE*
+  - license*
+  - LICENSE*
+  - readme*
+  - README*
+  - changelog*
+  - CHANGELOG*
