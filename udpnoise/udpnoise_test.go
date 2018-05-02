@@ -19,7 +19,13 @@ import (
 func TestNoLoss(t *testing.T) {
 	const message = "Hello"
 
-	ln, err := net.ListenUDP("udp", &net.UDPAddr{})
+	// Destination
+	laddr, err := net.ResolveUDPAddr("udp", "127.0.0.1:0")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	ln, err := net.ListenUDP("udp", laddr)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -30,6 +36,9 @@ func TestNoLoss(t *testing.T) {
 		}
 	}()
 
+	t.Logf("Destination on %s", ln.LocalAddr().String())
+
+	// Noise Generator
 	us, err := New(0, ln.LocalAddr().String())
 	if err != nil {
 		t.Fatal(err)
@@ -37,12 +46,13 @@ func TestNoLoss(t *testing.T) {
 
 	go us.Run()
 
-	addr, err := net.ResolveUDPAddr("udp", fmt.Sprintf("127.0.0.1:%d", us.Port))
+	// Source
+	raddr, err := net.ResolveUDPAddr("udp", fmt.Sprintf("127.0.0.1:%d", us.Port))
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	ci, err := net.DialUDP("udp", nil, addr)
+	ci, err := net.DialUDP("udp", &net.UDPAddr{}, raddr)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -60,5 +70,9 @@ func TestNoLoss(t *testing.T) {
 
 	if string(b) != "Hello" {
 		t.Fatalf("Send message and received message are not equal: %s != %s", "Hello", b)
+	}
+
+	if err := us.Close(); err != nil {
+		t.Fatal(err)
 	}
 }
