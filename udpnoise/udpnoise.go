@@ -25,7 +25,8 @@ type UDPNoise struct {
 
 	Destination *net.UDPAddr
 
-	ln *net.UDPConn
+	ln    *net.UDPConn
+	close chan struct{}
 }
 
 // New creates new udp noise proxy with given destination and loss probability
@@ -51,32 +52,61 @@ func New(loss int, destination string) (*UDPNoise, error) {
 
 		Destination: addr,
 
-		ln: ln,
+		ln:    ln,
+		close: make(chan struct{}),
 	}, nil
 }
 
 // Run Listen and Forward UDP packets with given loss rate
 func (u *UDPNoise) Run() {
-	for {
+	type readUDPData struct {
+		data []byte
+		err  error
+	}
+
+	readUDPChan := make(chan readUDPData)
+
+	go func() {
 		b := make([]byte, 1024)
 
 		_, addr, err := u.ln.ReadFromUDP(b)
 		if err != nil {
-			log.Fatal(err)
-		}
-		log.Println(addr)
-
-		if rand.Intn(100) < (100 - u.Loss) {
-			_, err := u.ln.WriteToUDP(b, u.Destination)
-			if err != nil {
-				log.Fatal(err)
+			readUDPChan <- readUDPData{
+				data: nil,
+				err:  err,
 			}
 		}
+		log.Printf("[udpnoise] Packet from %s", addr)
+		readUDPChan <- readUDPData{
+			data: b,
+			err:  nil,
+		}
+	}()
 
+	for {
+		// Let's stop the loop
+		select {
+		case <-u.close:
+			return
+		case d := <-readUDPChan:
+			if d.err != nil {
+				log.Fatalf("[udpnoise] Read from UDP: %s", d.err)
+			}
+
+			if rand.Intn(100) < (100 - u.Loss) {
+				_, err := u.ln.WriteToUDP(d.data, u.Destination)
+				if err != nil {
+					log.Fatalf("[udpnoise] Write to UDP: %s", err)
+				}
+			}
+			log.Printf("[udpnoise] Packet sends to %s with loss rate %d", u.Destination, u.Loss)
+		}
 	}
 }
 
 // Close openning udp socket
 func (u *UDPNoise) Close() error {
+	u.close <- struct{}{}
+
 	return u.ln.Close()
 }
