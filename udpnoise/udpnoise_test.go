@@ -43,6 +43,7 @@ func TestNoLoss(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	t.Logf("Noise Generator on %s", fmt.Sprintf("127.0.0.1:%d", us.Port))
 
 	go us.Run()
 
