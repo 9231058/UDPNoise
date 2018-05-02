@@ -1,0 +1,27 @@
+language: go
+go:
+  - master
+  - 1.9
+
+before_install:
+  # Setup some env variables
+  - GO_FILES=$(find . -iname '*.go' )  # All the .go files
+  - PKGS=$(go list ./... )             # All the import paths
+
+  # Setup dependency management tool
+  - go get -u github.com/golang/dep/cmd/dep
+
+  # Install linters
+  - go get -u github.com/golang/lint/golint              # Linter
+  - go get -u github.com/kisielk/errcheck                # errcheck checks that you checked errors.
+
+install:
+  - dep ensure
+
+script:
+  - go vet -v $PKGS                   # go vet is the official Go static analyzer
+  - errcheck -verbose $PKGS           # Check for unchecked errors
+  - golint -set_exit_status $PKGS     # One last linter
+
+  # Run all the tests
+  - go test -v $PKGS
