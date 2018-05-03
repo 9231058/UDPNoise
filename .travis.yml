@@ -3,6 +3,10 @@ go:
   - master
   - 1.9
 
+env:
+  global:
+    - secure: vulSU3qyNrJ3ZRTy6xj9QQM/Hjr7CfA9hhZUBnHK68s3BQ9Re91D6neefmwxo98rCYlRYexobyvlBprHB8R7f9YJd3UiSIXTQXbaczwg0VujFjNFTsgTFFtHJs9LF+fqBN5bvGii97vo7lzM17j76a6Fm/ldB7raYo6oAeSfO04klkar9I9/J40CoPRi6uXThS9c+8NFFucrhaIWzT2m/ngl3fqnbGmxjoUGDF51hc/X1hKJ0UHOS0M1zDbBlPp7INucDq7C+ckiJHijOOUWwXwIVs/EEaBucg2cvDBtWfRQvasWpm9lZV20aKHoHcxTGw0yxlJtUE8Z3oA6s2hcqOaUHxVM2BbEGDg57tM2rJ5IuOU75YXABdH5gC9Aze9HCjv406EECg5KRun/6CjWpdgpKDAhsF/wR/1R/uAOAQ1af40+Yu0VZaxOSkHMmv+OhvvSVnrZ4npRbk+lfBgMMzg2pmGVv4y5/xbR9zWrq0r8jle3wB600I7czxI3DIbu6m0hIHgtFWlw/6Fb3FrauvlXL6qtk/iZFCD7kdGSMsTpkbgaW6v8EuxM1ytRLrRrKjmDLsHEScWHREj5PcCbGYbisEvtSCaNiVCQrfEa8Ek19jedQH8uUPmkn0QSicXgbMiYZ9ILMTk7Xx0o/rSDtutJ8IgTCDICJXlKENBA3Vw=
+
 before_install:
   # Setup some env variables
   - GO_FILES=$(find . -iname '*.go' )  # All the .go files
@@ -31,9 +35,6 @@ before_deploy:
   - git checkout Gopkg.lock
 deploy:
   - provider: script
-    user: 1995parham
-    password:
-      secure: R1Ha1DqcmVKxpmdafiy4YTd1toME3T3L1rPh94M2FfhXuK+r61DUQLyp91rcmCs/CHKLfediFTMYBZ9m1ZWWnwyMEuuuhmvTVquSJ79pCpbwrdQtu8ssg+Lu28bDLI15Hjp9WyGESTUL2l6x7ACxoDnkT7iBWLcb4V2Ie5g4RIxPsQyXy6IpAxXZ3FHO5faasVD7BEXvOjrTtxxq8633kxWQKYbOpU7uGfjk5G1eSR3PoBpYmuTpFB2w9UUPhIKwRSmNRLZYqRo09+s3i8dLGpGp+nYTEIm6OYNurbMmCNsuMvvyztp1GWiNBeo/F2Wz/lHumWtQEy3H5zrdCntqqQyPMQ93TBoFx5B7AKN1+JJMlssE2ZoOBeRAn384lkwIE0lfvNW+P4nzHR1vXQsJ7ZB1E0bDeM5W/bI3KjHq9Fi2v1BTFckpLut4YhihLQQyIzZ4Aw9FHOL7Wukh1zOfUXFreDWfB3iImajwfDnZd7Wr3PPRg2ww1oG3bomJVR4EQblax4xV3OFaidLT3VQE+t7B/C/tE0PzkaBKtLGzx5OTt8WMG+gFQI4eQ3nPZV2pto8XfXno3LaEpxYp6eGu8RelvvfAn6zUlgzVam118mymUWfSalJTw5qrur1cJC4aOVMsqv0Tu84EvcsDMnvnX+VYWWm9qWSvEo4wxbiVyl8=
     skip_cleanup: true
     script: curl -sL https://git.io/goreleaser | bash
     on:
