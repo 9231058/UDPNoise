@@ -11,6 +11,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
 
@@ -20,13 +21,15 @@ import (
 func main() {
 	fmt.Println("Parham Alvani <parham.alvani@gmail.com>")
 
-	loss := 100
-	destination := "127.0.0.1:8080"
+	var loss = flag.Int("loss", 0, "packet loss ratio")
+	var destination = flag.String("destination", "127.0.0.1:8080", "udp packets destination")
+	flag.Parse()
 
-	u, err := udpnoise.New(loss, destination)
+	u, err := udpnoise.New(*loss, *destination)
 	if err != nil {
 		log.Fatal(err)
 	}
+	fmt.Printf("UDP Noise on :%d -> %s with %d loss\n", u.Port, u.Destination, u.Loss)
 
 	u.Run()
 }
