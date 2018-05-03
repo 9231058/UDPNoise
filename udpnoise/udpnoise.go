@@ -67,19 +67,21 @@ func (u *UDPNoise) Run() {
 	readUDPChan := make(chan readUDPData)
 
 	go func() {
-		b := make([]byte, 1024)
+		for {
+			b := make([]byte, 1024)
 
-		_, addr, err := u.ln.ReadFromUDP(b)
-		if err != nil {
-			readUDPChan <- readUDPData{
-				data: nil,
-				err:  err,
+			_, addr, err := u.ln.ReadFromUDP(b)
+			if err != nil {
+				readUDPChan <- readUDPData{
+					data: nil,
+					err:  err,
+				}
 			}
-		}
-		log.Printf("[udpnoise] Packet from %s", addr)
-		readUDPChan <- readUDPData{
-			data: b,
-			err:  nil,
+			log.Printf("[udpnoise] Packet from %s", addr)
+			readUDPChan <- readUDPData{
+				data: b,
+				err:  nil,
+			}
 		}
 	}()
 
