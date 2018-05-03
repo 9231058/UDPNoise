@@ -58,19 +58,21 @@ func TestNoLoss(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	// Send one packet
-	if _, err := ci.Write([]byte(message)); err != nil {
-		t.Fatal(err)
-	}
+	for i := 0; i < 2; i++ {
+		// Send one packet
+		if _, err := ci.Write([]byte(message)); err != nil {
+			t.Fatal(err)
+		}
 
-	// Receive one packet
-	b := make([]byte, len(message))
-	if _, err := ln.Read(b); err != nil {
-		t.Fatal(err)
-	}
+		// Receive one packet
+		b := make([]byte, len(message))
+		if _, err := ln.Read(b); err != nil {
+			t.Fatal(err)
+		}
 
-	if string(b) != "Hello" {
-		t.Fatalf("Send message and received message are not equal: %s != %s", "Hello", b)
+		if string(b) != "Hello" {
+			t.Fatalf("Send message and received message are not equal: %s != %s", "Hello", b)
+		}
 	}
 
 	if err := us.Close(); err != nil {
