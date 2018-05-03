@@ -2,8 +2,8 @@ project_name: udpnoise
 
 release:
   github:
-    owner: 1995parham
-    name: udpnoise
+    owner: AUT-CEIT
+    name: UDPNoise
 
 builds:
   - binary: udpnoise
