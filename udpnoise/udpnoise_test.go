@@ -17,7 +17,8 @@ import (
 )
 
 func TestNoLoss(t *testing.T) {
-	const message = "Hello"
+	const request = "Hello"
+	const response = "My name is 18.20"
 
 	// Destination
 	laddr, err := net.ResolveUDPAddr("udp", "127.0.0.1:0")
@@ -58,21 +59,40 @@ func TestNoLoss(t *testing.T) {
 		t.Fatal(err)
 	}
 
+	t.Logf("Source on %s", ci.LocalAddr().String())
+
 	for i := 0; i < 2; i++ {
-		// Send one packet
-		if _, err := ci.Write([]byte(message)); err != nil {
+		// Send request (source)
+		if _, err := ci.Write([]byte(request)); err != nil {
 			t.Fatal(err)
 		}
 
-		// Receive one packet
-		b := make([]byte, len(message))
-		if _, err := ln.Read(b); err != nil {
+		// Receive request (destination)
+		bReq := make([]byte, len(request))
+		_, addr, err := ln.ReadFromUDP(bReq)
+		if err != nil {
 			t.Fatal(err)
 		}
 
-		if string(b) != "Hello" {
-			t.Fatalf("Send message and received message are not equal: %s != %s", "Hello", b)
+		if string(bReq) != request {
+			t.Fatalf("Send request and received request are not equal: %s != %s", request, bReq)
 		}
+
+		// Send response
+		if _, err := ln.WriteToUDP([]byte(response), addr); err != nil {
+			t.Fatal(err)
+		}
+
+		// Receive response (destination)
+		bRes := make([]byte, len(response))
+		if _, err := ci.Read(bRes); err != nil {
+			t.Fatal(err)
+		}
+
+		if string(bRes) != response {
+			t.Fatalf("Send response and received response are not equal: %s != %s", response, bRes)
+		}
+
 	}
 
 	if err := us.Close(); err != nil {
