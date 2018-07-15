@@ -24,6 +24,7 @@ type UDPNoise struct {
 	Loss int
 
 	Destination *net.UDPAddr
+	Source      *net.UDPAddr
 
 	ln    *net.UDPConn
 	close chan struct{}
@@ -51,6 +52,7 @@ func New(loss int, destination string) (*UDPNoise, error) {
 		Loss: loss,
 
 		Destination: addr,
+		Source:      nil,
 
 		ln:    ln,
 		close: make(chan struct{}),
@@ -61,6 +63,7 @@ func New(loss int, destination string) (*UDPNoise, error) {
 func (u *UDPNoise) Run() {
 	type readUDPData struct {
 		data []byte
+		from *net.UDPAddr
 		err  error
 	}
 
@@ -74,12 +77,26 @@ func (u *UDPNoise) Run() {
 			if err != nil {
 				readUDPChan <- readUDPData{
 					data: nil,
+					from: addr,
 					err:  err,
 				}
 			}
+
+			// store source address
+			if addr.String() != u.Destination.String() {
+				if u.Source != nil {
+					if u.Source.String() != addr.String() {
+						panic("Multiple client detected")
+					}
+				} else {
+					u.Source = addr
+				}
+			}
+
 			log.Printf("[udpnoise] Packet from %s", addr)
 			readUDPChan <- readUDPData{
 				data: b,
+				from: addr,
 				err:  nil,
 			}
 		}
@@ -96,9 +113,14 @@ func (u *UDPNoise) Run() {
 			}
 
 			if rand.Intn(100) < (100 - u.Loss) {
-				_, err := u.ln.WriteToUDP(d.data, u.Destination)
-				if err != nil {
-					log.Fatalf("[udpnoise] Write to UDP: %s", err)
+				if d.from.String() != u.Destination.String() {
+					if _, err := u.ln.WriteToUDP(d.data, u.Destination); err != nil {
+						log.Fatalf("[udpnoise] Write to UDP (%s): %s", u.Destination, err)
+					}
+				} else {
+					if _, err := u.ln.WriteToUDP(d.data, u.Source); err != nil {
+						log.Fatalf("[udpnoise] Write to UDP (%s): %s", u.Source, err)
+					}
 				}
 			}
 			log.Printf("[udpnoise] Packet sends to %s with loss rate %d", u.Destination, u.Loss)
