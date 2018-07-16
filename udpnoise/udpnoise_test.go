@@ -110,7 +110,9 @@ func TestMain(t *testing.T) {
 		}
 
 		// Receive request (destination)
-		ln.SetReadDeadline(time.Unix(1, 0))
+		if err := ln.SetReadDeadline(time.Unix(1, 0)); err != nil {
+			t.Fatal(err)
+		}
 		bReq := make([]byte, len(request))
 		_, _, err := ln.ReadFromUDP(bReq)
 		if err == nil {
