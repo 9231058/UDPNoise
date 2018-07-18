@@ -71,9 +71,10 @@ func (u *UDPNoise) Run() {
 
 	go func() {
 		for {
-			b := make([]byte, 1024)
+			b := make([]byte, 2048)
 
-			_, addr, err := u.ln.ReadFromUDP(b)
+			n, addr, err := u.ln.ReadFromUDP(b)
+			b = b[:n]
 			if err != nil {
 				readUDPChan <- readUDPData{
 					data: nil,
@@ -86,7 +87,7 @@ func (u *UDPNoise) Run() {
 			if addr.String() != u.Destination.String() {
 				if u.Source != nil {
 					if u.Source.String() != addr.String() {
-						panic("Multiple client detected")
+						u.Source = addr
 					}
 				} else {
 					u.Source = addr
