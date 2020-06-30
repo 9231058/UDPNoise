@@ -25,7 +25,7 @@ type UDPNoise struct {
 	// Port is the source port and one of the peers must connect to it.
 	Port int
 
-	// Loss is the loss ratio for ongoing packetes.
+	// Loss is the loss ratio for ongoing packetes. You can change it in runtime.
 	Loss int
 
 	// Destination address
