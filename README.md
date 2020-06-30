@@ -1,5 +1,5 @@
 # UDPNoise
-[![Travis branch](https://img.shields.io/travis/AUT-CEIT/UDPNoise/master.svg?style=flat-square)](https://travis-ci.org/AUT-CEIT/UDPNoise)
+[![Drone (cloud)](https://img.shields.io/drone/build/elahe-dastan/UDPNoise.svg?style=flat-square)](https://cloud.drone.io/elahe-dastan/UDPNoise)
 [![GoReleaser](https://img.shields.io/badge/powered%20by-goreleaser-green.svg?style=flat-square)](https://github.com/goreleaser)
 
 ## Introduction
