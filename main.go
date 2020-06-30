@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/elahe-dastan/UDPNoise/udpnoise"
+	"github.com/elahe-dastan/UDPNoise/core"
 )
 
 func main() {
@@ -18,7 +18,7 @@ func main() {
 
 	flag.Parse()
 
-	u, err := udpnoise.New(*loss, *destination)
+	u, err := core.New(*loss, *destination)
 	if err != nil {
 		log.Fatal(err)
 	}

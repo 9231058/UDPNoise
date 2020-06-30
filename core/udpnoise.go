@@ -1,14 +1,4 @@
-/*
- * +===============================================
- * | Author:        Parham Alvani <parham.alvani@gmail.com>
- * |
- * | Creation Date: 01-05-2018
- * |
- * | File Name:     udpnoise.go
- * +===============================================
- */
-
-package udpnoise
+package core
 
 import (
 	"errors"

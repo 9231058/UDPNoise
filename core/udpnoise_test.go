@@ -1,20 +1,12 @@
-/*
- * +===============================================
- * | Author:        Parham Alvani <parham.alvani@gmail.com>
- * |
- * | Creation Date: 02-05-2018
- * |
- * | File Name:     udpnoise/udpnoise_test.go
- * +===============================================
- */
-
-package udpnoise
+package core_test
 
 import (
 	"fmt"
 	"net"
 	"testing"
 	"time"
+
+	"github.com/elahe-dastan/UDPNoise/core"
 )
 
 func TestMain(t *testing.T) {
@@ -38,10 +30,11 @@ func TestMain(t *testing.T) {
 	t.Logf("Destination on %s", ln.LocalAddr().String())
 
 	// Noise Generator
-	us, err := New(0, ln.LocalAddr().String())
+	us, err := core.New(0, ln.LocalAddr().String())
 	if err != nil {
 		t.Fatal(err)
 	}
+
 	t.Logf("Noise Generator on %s", fmt.Sprintf("127.0.0.1:%d", us.Port))
 
 	go us.Run()
@@ -96,9 +89,9 @@ func TestMain(t *testing.T) {
 			if string(bRes) != response {
 				t.Fatalf("Send response and received response are not equal: %s != %s", response, bRes)
 			}
-
 		}
 	})
+
 	t.Run("TestAllLoss", func(t *testing.T) {
 		const request = "GetLoss"
 
@@ -118,7 +111,6 @@ func TestMain(t *testing.T) {
 		if err == nil {
 			t.Fatal("This packet must be loss")
 		}
-
 	})
 
 	if err := us.Close(); err != nil {
