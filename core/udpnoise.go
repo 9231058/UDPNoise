@@ -121,20 +121,20 @@ func (u *UDPNoise) Run() {
 				log.Fatalf("[udpnoise] Read from UDP: %s", d.err)
 			}
 
+			var to *net.UDPAddr
+			if d.from.String() != u.Destination.String() {
+				to = u.Destination
+			} else {
+				to = u.Source
+			}
+
+			// nolint: gomnd
 			if rand.Intn(100) < (100 - u.Loss) {
-				if d.from.String() != u.Destination.String() {
-					if _, err := u.ln.WriteToUDP(d.data, u.Destination); err != nil {
-						log.Fatalf("[udpnoise] Write to UDP (%s): %s", u.Destination, err)
-					}
-
-					log.Printf("[udpnoise] Packet sends to %s with loss rate %d", u.Destination, u.Loss)
-				} else {
-					if _, err := u.ln.WriteToUDP(d.data, u.Source); err != nil {
-						log.Fatalf("[udpnoise] Write to UDP (%s): %s", u.Source, err)
-					}
-
-					log.Printf("[udpnoise] Packet sends to %s with loss rate %d", u.Source, u.Loss)
+				if _, err := u.ln.WriteToUDP(d.data, to); err != nil {
+					log.Fatalf("[udpnoise] Write to UDP (%s): %s", to, err)
 				}
+
+				log.Printf("[udpnoise] Packet sends to %s with loss rate %d", to, u.Loss)
 			}
 		}
 	}

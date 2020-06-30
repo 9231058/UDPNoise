@@ -9,6 +9,7 @@ import (
 	"github.com/elahe-dastan/UDPNoise/core"
 )
 
+// nolint: funlen
 func TestMain(t *testing.T) {
 	// Destination
 	laddr, err := net.ResolveUDPAddr("udp", "127.0.0.1:0")
